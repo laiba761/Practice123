@@ -1,5 +1,7 @@
 - name: SonarCloud Scan
-  uses: SonarSource/sonarcloud-github-action@v1.8
+  uses: sonarsource/sonarcloud-github-action@master
+with:
+  projectBaseDir: Practice123
 
 name: Build
 on:
