@@ -1,7 +1,33 @@
-- name: sonar-scanner
-  # You may pin to the exact commit or the version.
-  # uses: Warchant/setup-sonar-scanner@3a54371c833a3a8c9b1fb24d590a6396b96a6d93
-  uses: Warchant/setup-sonar-scanner@v4
-  with:
-    # Sonar-scanner version
-    version: # default is 4.6.2.2472
+name: Unit Tests and Analysis
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - ".github/**"
+      - "**.md"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Run Unit Tests and Analyse
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: bcgov-nr/action-test-and-analyse-java@v.0.1.0
+        with:
+          commands: |
+            ./mvnw test
+          dir: frontend
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
+          sonar_args: |
+            -Dsonar.exclusions=**/coverage/**
+            -Dsonar.organization=bcgov-nr
+            -Dsonar.projectKey=bcgov-nr_action-test-and-analyse-java
+          sonar_project_token: ${{ secrets.SONAR_TOKEN }}
